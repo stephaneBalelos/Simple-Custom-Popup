@@ -4,14 +4,17 @@ export function setupPopupModal() {
   const openButton = document.querySelector('[open-popup]') as HTMLButtonElement
   let timeoutId: NodeJS.Timeout | null = null
 
+  if (!modal) {
+    return
+  }
+
   const settings = {
-    timeToTrigger: Math.abs(parseInt(modal.getAttribute('time-to-trigger') || '0')) * 1000,
-    closeButton: closeButton,
+    timeToTrigger: Math.abs(parseInt(modal.getAttribute('time-to-trigger') || '0')) * 1000
   }
 
   const close = () => {
     const focused = document.activeElement as HTMLElement
-    if(focused) {
+    if (focused) {
       focused.blur()
     }
     modal.style.display = 'none'
@@ -39,15 +42,19 @@ export function setupPopupModal() {
     }
   })
 
-  closeButton.addEventListener('click', (e) => {
-    e.preventDefault()
-    close()
-  })
+  if (closeButton) {
+    closeButton.addEventListener('click', (e) => {
+      e.preventDefault()
+      close()
+    })
+  }
 
-  openButton.addEventListener('click', (e) => {
-    e.preventDefault()
-    open()
-  })
+  if (openButton) {
+    openButton.addEventListener('click', (e) => {
+      e.preventDefault()
+      open()
+    })
+  }
 
   // Trigger the modal after a certain time
   if (settings.timeToTrigger > 0) {
@@ -62,5 +69,4 @@ export function setupPopupModal() {
     }
   })
 
-  console.log(settings)
 }
