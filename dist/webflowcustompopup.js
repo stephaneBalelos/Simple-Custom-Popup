@@ -1,28 +1,40 @@
-function r() {
-  const e = document.getElementById("popup-modal"), n = e.querySelector("[close-popup]"), s = document.querySelector("[open-popup]");
+function f() {
+  const t = document.getElementById("popup-modal"), d = t.querySelector("[close-popup]"), r = document.querySelector("[open-popup]");
   let o = null;
-  if (!e)
+  if (!t)
     return;
-  const l = {
-    timeToTrigger: Math.abs(parseInt(e.getAttribute("time-to-trigger") || "0")) * 1e3
-  }, i = () => {
-    const t = document.activeElement;
-    t && t.blur(), e.style.display = "none", e.setAttribute("aria-hidden", "true"), e.setAttribute("tabindex", "-1"), e.setAttribute("aria-modal", "false"), document.body.style.overflow = "auto", o && (clearTimeout(o), o = null);
-  }, d = () => {
-    e.style.display = "flex", e.classList.add("show"), e.setAttribute("aria-hidden", "false"), e.setAttribute("tabindex", "0"), document.body.style.overflow = "hidden";
+  const i = {
+    timeToTrigger: Math.abs(parseInt(t.getAttribute("time-to-trigger") || "0")) * 1e3,
+    popupId: t.getAttribute("popup-id") || ""
+  }, p = () => {
+    const e = /* @__PURE__ */ new Date();
+    e.setTime(e.getTime() + 365 * 24 * 60 * 60 * 1e3);
+    const u = "expires=" + e.toUTCString();
+    document.cookie = `popup-id-${i.popupId}=seen; ${u}; path=/`;
+  }, a = () => {
+    const e = "popup-id-" + i.popupId + "=seen", l = decodeURIComponent(document.cookie).split(";");
+    for (let s = 0; s < l.length; s++)
+      if (l[s].trim().indexOf(e) === 0)
+        return !0;
+    return !1;
+  }, n = () => {
+    const e = document.activeElement;
+    e && e.blur(), t.style.display = "none", t.setAttribute("aria-hidden", "true"), t.setAttribute("tabindex", "-1"), t.setAttribute("aria-modal", "false"), document.body.style.overflow = "auto", o && (clearTimeout(o), o = null);
+  }, c = () => {
+    t.style.display = "flex", t.classList.add("show"), t.setAttribute("aria-hidden", "false"), t.setAttribute("tabindex", "0"), document.body.style.overflow = "hidden", p(), o && (clearTimeout(o), o = null);
   };
-  e.addEventListener("click", (t) => {
-    t.target === e && i();
-  }), n && n.addEventListener("click", (t) => {
-    t.preventDefault(), i();
-  }), s && s.addEventListener("click", (t) => {
-    t.preventDefault(), d();
-  }), l.timeToTrigger > 0 && (o = setTimeout(() => {
-    d();
-  }, l.timeToTrigger)), document.addEventListener("keydown", (t) => {
-    t.key === "Escape" && e.style.display === "flex" && i();
+  t.addEventListener("click", (e) => {
+    e.target === t && n();
+  }), d && d.addEventListener("click", (e) => {
+    e.preventDefault(), n();
+  }), r && r.addEventListener("click", (e) => {
+    e.preventDefault(), c();
+  }), i.timeToTrigger > 0 && !a() && (o = setTimeout(() => {
+    c();
+  }, i.timeToTrigger)), document.addEventListener("keydown", (e) => {
+    e.key === "Escape" && t.style.display === "flex" && n();
   });
 }
 export {
-  r as setupPopupModal
+  f as setupPopupModal
 };
