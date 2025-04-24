@@ -9,7 +9,28 @@ export function setupPopupModal() {
   }
 
   const settings = {
-    timeToTrigger: Math.abs(parseInt(modal.getAttribute('time-to-trigger') || '0')) * 1000
+    timeToTrigger: Math.abs(parseInt(modal.getAttribute('time-to-trigger') || '0')) * 1000,
+    popupId: modal.getAttribute('popup-id') || '',
+  }
+
+  const setSeenCookie = () => {
+    const date = new Date()
+    date.setTime(date.getTime() + 365 * 24 * 60 * 60 * 1000) // Set cookie for 1 year
+    const expires = 'expires=' + date.toUTCString()
+    document.cookie = `popup-id-${settings.popupId}=seen; ${expires}; path=/`
+  }
+
+  const getSeenCookie = () => {
+    const name = 'popup-id-' + settings.popupId + '=seen'
+    const decodedCookie = decodeURIComponent(document.cookie)
+    const cookieArray = decodedCookie.split(';')
+    for (let i = 0; i < cookieArray.length; i++) {
+      let cookie = cookieArray[i].trim()
+      if (cookie.indexOf(name) === 0) {
+        return true
+      }
+    }
+    return false
   }
 
   const close = () => {
@@ -34,6 +55,12 @@ export function setupPopupModal() {
     modal.setAttribute('aria-hidden', 'false')
     modal.setAttribute('tabindex', '0')
     document.body.style.overflow = 'hidden'
+
+    setSeenCookie()
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = null
+    }
   }
 
   modal.addEventListener('click', (e) => {
@@ -57,7 +84,7 @@ export function setupPopupModal() {
   }
 
   // Trigger the modal after a certain time
-  if (settings.timeToTrigger > 0) {
+  if (settings.timeToTrigger > 0 && !getSeenCookie()) {
     timeoutId = setTimeout(() => {
       open()
     }, settings.timeToTrigger)
@@ -68,5 +95,6 @@ export function setupPopupModal() {
       close()
     }
   })
+
 
 }
