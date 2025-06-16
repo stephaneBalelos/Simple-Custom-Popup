@@ -11,17 +11,28 @@ export function setupPopupModal() {
   const settings = {
     timeToTrigger: Math.abs(parseInt(modal.getAttribute('time-to-trigger') || '0')) * 1000,
     popupId: modal.getAttribute('popup-id') || '',
+    popupCache: modal.getAttribute('popup-cache') === 'true',
   }
 
   const setSeenCookie = () => {
     const date = new Date()
-    date.setTime(date.getTime() + 365 * 24 * 60 * 60 * 1000) // Set cookie for 1 year
+    if (!settings.popupId) {
+      console.warn('Popup ID is not set. Cannot set seen cookie.')
+      return
+    }
+    if (!settings.popupCache) {
+      console.warn('Popup cache is disabled. Not setting seen cookie.')
+      return
+    }
+    date.setTime(date.getTime() + 24 * 60 * 60 * 1000) // Set cookie for 24 hours
     const expires = 'expires=' + date.toUTCString()
     document.cookie = `popup-id-${settings.popupId}=seen; ${expires}; path=/`
   }
 
   const getSeenCookie = () => {
-    return false
+    if (!settings.popupId || !settings.popupCache) {
+      return false
+    }
     const name = 'popup-id-' + settings.popupId + '=seen'
     const decodedCookie = decodeURIComponent(document.cookie)
     const cookieArray = decodedCookie.split(';')
