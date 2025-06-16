@@ -21,6 +21,7 @@ export function setupPopupModal() {
   }
 
   const getSeenCookie = () => {
+    return false
     const name = 'popup-id-' + settings.popupId + '=seen'
     const decodedCookie = decodeURIComponent(document.cookie)
     const cookieArray = decodedCookie.split(';')
@@ -84,7 +85,7 @@ export function setupPopupModal() {
   }
 
   // Trigger the modal after a certain time
-  if (settings.timeToTrigger > 0) {
+  if (settings.timeToTrigger > 0 && !getSeenCookie()) {
     timeoutId = setTimeout(() => {
       open()
     }, settings.timeToTrigger)
