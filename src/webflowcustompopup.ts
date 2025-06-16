@@ -84,7 +84,7 @@ export function setupPopupModal() {
   }
 
   // Trigger the modal after a certain time
-  if (settings.timeToTrigger > 0 && !getSeenCookie()) {
+  if (settings.timeToTrigger > 0) {
     timeoutId = setTimeout(() => {
       open()
     }, settings.timeToTrigger)
